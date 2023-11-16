@@ -1,10 +1,13 @@
 import requests
 import pymongo
 import certifi
+import time
+import csv
 
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from certifi import where
+from datetime import datetime
 
 target_url = "https://apps.cra-arc.gc.ca/ebci/hacc/srch/pub/bscSrch"
 page_num = 1
@@ -72,14 +75,14 @@ while soup != -1:
     char_status_date = [td.text.strip() for td in header6_tds]
 
     # Append lists to master lists
-    master_pagination.append(pagination_hrefs)
-    master_charity_org_name_text.append(charity_org_name_text)
-    master_charity_org_name_href.append(charity_org_name_href)
-    master_charity_status.append(charity_status)
-    master_charity_type.append(charity_type)
-    master_charity_province.append(charity_province)
-    master_charity_city.append(charity_city)
-    master_charity_status_date.append(charity_status)
+    master_pagination.extend(pagination_hrefs)
+    master_charity_org_name_text.extend(charity_org_name_text)
+    master_charity_org_name_href.extend(charity_org_name_href)
+    master_charity_status.extend(charity_status)
+    master_charity_type.extend(charity_type)
+    master_charity_province.extend(charity_province)
+    master_charity_city.extend(charity_city)
+    master_charity_status_date.extend(charity_status)
 
     # Increment pagination
     page_num = page_num + 1
@@ -91,6 +94,8 @@ while soup != -1:
     )
 
     soup = get_html(target_url)
+
+    time.sleep(5)
 
 
 ### Load data to MongoDB
@@ -104,15 +109,15 @@ connection = (
 # Combine lists into a list of dictionaries
 documents = [
     {
-        "charity_name": c_name,
-        "charity_url": c_url,
-        "charity_status": c_status,
-        "charity_type": c_type,
-        "charity_province": c_province,
-        "charity_city": c_city,
-        "charity_status_date": c_status_date,
+        "charity_org_name_text": name_text,
+        "charity_org_name_href": name_href,
+        "charity_status": status,
+        "charity_type": charity_type,
+        "charity_province": province,
+        "charity_city": city,
+        "charity_status_date": status_date,
     }
-    for c_name, c_url, c_status, c_type, c_province, c_city, c_status_date in zip(
+    for name_text, name_href, status, charity_type, province, city, status_date in zip(
         master_charity_org_name_text,
         master_charity_org_name_href,
         master_charity_status,
@@ -123,8 +128,26 @@ documents = [
     )
 ]
 
+# Export dictionaries to csv output
+today_date = datetime.today().strftime("%Y-%m-%d")
+csv_file_path = (
+    "/Users/danyan/Library/CloudStorage/OneDrive-Personal/1-Professional/2-Skills/vs-code-workspace/charity_data/"
+    + today_date
+    + "-export-cra-charity-list.csv"
+)
+
+with open(csv_file_path, "w", newline="") as csv_file:
+    fieldnames = documents[0].keys()  # Assumes all dictionaries have the same keys
+    writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+    # Write the header
+    writer.writeheader()
+
+    # Write the data
+    writer.writerows(documents)
+
 # Connect to MongoDB
-client = pymongo.MongoClient(connection, tlsCAFile=certifi.where())
+client = MongoClient(connection, tlsCAFile=certifi.where())
 
 # Select the database (create one if it doesn't exist)
 db = client["charity_data"]
