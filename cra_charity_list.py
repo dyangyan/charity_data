@@ -95,7 +95,7 @@ while soup != -1:
 
     soup = get_html(target_url)
 
-    time.sleep(5)
+    time.sleep(10)
 
 
 ### Load data to MongoDB
