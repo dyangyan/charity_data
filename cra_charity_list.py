@@ -9,6 +9,7 @@ from pymongo import MongoClient
 from certifi import where
 from datetime import datetime
 
+### Define global variables
 target_url = "https://apps.cra-arc.gc.ca/ebci/hacc/srch/pub/bscSrch"
 page_num = 1
 
@@ -35,6 +36,19 @@ def get_html(target_url):
         print(f"Error: {e}")
 
         return -1
+
+
+### Method for exporting dictionaries to csv
+def export_to_csv(file_path, input_data):
+    with open(file_path, "w", newline="") as csv_file:
+        fieldnames = input_data[0].keys()  # Assumes all dictionaries have the same keys
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+        # Write the header
+        writer.writeheader()
+
+        # Write the data
+        writer.writerows(input_data)
 
 
 ### Set up beautifulsoup
@@ -82,7 +96,7 @@ while soup != -1:
     master_charity_type.extend(charity_type)
     master_charity_province.extend(charity_province)
     master_charity_city.extend(charity_city)
-    master_charity_status_date.extend(charity_status)
+    master_charity_status_date.extend(master_charity_status_date)
 
     # Increment pagination
     page_num = page_num + 1
@@ -95,7 +109,7 @@ while soup != -1:
 
     soup = get_html(target_url)
 
-    time.sleep(10)
+    time.sleep(3)
 
 
 ### Load data to MongoDB
@@ -130,21 +144,13 @@ documents = [
 
 # Export dictionaries to csv output
 today_date = datetime.today().strftime("%Y-%m-%d")
-csv_file_path = (
-    "/Users/danyan/Library/CloudStorage/OneDrive-Personal/1-Professional/2-Skills/vs-code-workspace/charity_data/"
+file_path = (
+    "/Users/danyan/Library/CloudStorage/OneDrive-Personal/1-Education/code-workspace/charity_data/"
     + today_date
     + "-export-cra-charity-list.csv"
 )
 
-with open(csv_file_path, "w", newline="") as csv_file:
-    fieldnames = documents[0].keys()  # Assumes all dictionaries have the same keys
-    writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-
-    # Write the header
-    writer.writeheader()
-
-    # Write the data
-    writer.writerows(documents)
+export_to_csv(file_path, documents)
 
 # Connect to MongoDB
 client = MongoClient(connection, tlsCAFile=certifi.where())
