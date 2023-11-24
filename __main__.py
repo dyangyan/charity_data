@@ -225,7 +225,9 @@ def get_charity_data(doc):
 
         # Get the charity's registration number
         target_reg_num = soup.find("div", class_="col-xs-12 col-sm-6 col-md-6 col-lg-9")
-        reg_num = target_reg_num.text.strip()
+        reg_num_messy = target_reg_num.text.strip()
+        parts = reg_num_messy.split("\r")
+        reg_num = parts[0]
 
         # Get the charity's Full View urls, ensuring the preceding div is for Full View (vs Quick View)
         preceding_div = soup.find(
@@ -342,7 +344,17 @@ def main():
 
         full_view_dir.extend(charity_fv)  # Add charity fv details to master list
 
+        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
+        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
+        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
+        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
+        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
         break
+        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
+        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
+        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
+        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
+        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
 
     # Export charity full view directory into csv and MongoDB
     file_name = "charity-fv-dir"
