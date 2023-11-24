@@ -1,0 +1,15 @@
+CAHRD
+<a href="/ebci/hacc/srch/pub/dsplyT3010FrFlngPrd?q.stts=0007&amp;selectedFilingPeriodIndex=0&amp;selectedCharityBn=119052124RR0001&amp;isSingleResult=false">2022-03-31</a>
+
+ACCES
+<a href="/ebci/hacc/srch/pub/dsplyT3010FrFlngPrd?selectedFilingPeriodIndex=0&amp;selectedCharityBn=136747276RR0001&amp;isSingleResult=false">2023-03-31</a>
+
+CAFGRAF
+<a href="/ebci/hacc/srch/pub/dsplyT3010FrFlngPrd?q.stts=0007&amp;selectedFilingPeriodIndex=0&amp;selectedCharityBn=139415707RR0001&amp;isSingleResult=false">2023-03-31</a>
+
+CODE
+'https://apps.cra-arc.gc.ca/ebci/hacc/srch/pub/dsplyRprtngPrd?selectedCharityBn=119052124RR0001&dsrdPg=1'
+
+<div class="h3 row mrgn-lft-sm mrgn-bttm-md">
+			Full View
+		</div>

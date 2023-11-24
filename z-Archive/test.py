@@ -1,14 +1,13 @@
-import requests
+charity_name = ["A"]
+reg_num = ["123"]
+urls = ["abc", "def"]
 
-url = "https://apps.cra-arc.gc.ca/ebci/hacc/srch/pub/bscSrchcom"
+max_length = max(len(charity_name), len(reg_num), len(urls))
 
-try:
-    response = requests.get(url)
-    response.raise_for_status()  # Raise an HTTPError for bad responses (4xx and 5xx status codes)
+result_dict = {
+    "charity_name": [charity_name[i % len(charity_name)] for i in range(max_length)],
+    "reg_num": [reg_num[i % len(reg_num)] for i in range(max_length)],
+    "urls": urls,
+}
 
-    # Print the HTTP response code
-    print(f"HTTP Response Code: {response.status_code}")
-
-except requests.exceptions.RequestException as e:
-    # Handle exceptions, such as connection errors or timeouts
-    print(f"Error: {e}")
+print(result_dict)
