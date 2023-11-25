@@ -320,7 +320,12 @@ def get_fv_detail(doc):
         directors_worksheet_link.click()
 
         # Get director worksheet data
-        time.sleep(0.15)
+        wait = WebDriverWait(driver, 10)
+        director_table = wait.until(
+            EC.presence_of_element_located(
+                (By.XPATH, "/html/body/div[1]/div/main/div[5]/div/table/tbody")
+            )
+        )
         director_table = driver.find_element(
             By.XPATH, "/html/body/div[1]/div/main/div[5]/div/table/tbody"
         )  # Find table of directors
