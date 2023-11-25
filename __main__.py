@@ -343,6 +343,9 @@ def get_fv_detail(doc):
             position = director_details[3].find_element(By.TAG_NAME, "strong").text
             arms_length = director_details[4].find_element(By.TAG_NAME, "strong").text
 
+            # Get insert date
+            insert_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
             director_info = {
                 "charity_reg_num": charity_reg_num,
                 "full_view_year": fv_year,
@@ -351,6 +354,7 @@ def get_fv_detail(doc):
                 "term_end": term_end,
                 "position": position,
                 "arms_length": arms_length,
+                "insert_date": insert_date,
             }
 
             master_director_info.append(director_info)
