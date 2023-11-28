@@ -1,18 +1,15 @@
-# This file runs when the Python module is executed with the '-m' flag, such as `python -m charity_data`
-
-# Setup environment
-import requests
-import pymongo
+### Setup environment
 import certifi
-import time
 import csv
+import math
 import random
-import selenium
+import re
+import requests
+import time
 
 from bs4 import BeautifulSoup
-from pymongo import MongoClient
-from certifi import where
 from datetime import datetime
+from pymongo import MongoClient
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -20,18 +17,19 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 ### Global variables
-mongodb_username = "danyangyan"
-mongodb_password = "5JhJMQ2itEnVW2Wm"
-mongodb_connection = (
+MONGODB_USERNAME = "danyangyan"
+MONGODB_PASSWORD = "5JhJMQ2itEnVW2Wm"
+MONGODB_CONNECTION = (
     "mongodb+srv://"
     + mongodb_username
     + ":"
     + mongodb_password
     + "@discourse.mwgzz8m.mongodb.net"
 )
-cra_parent_url = "https://apps.cra-arc.gc.ca"
+CRA_PARENT_URL = "https://apps.cra-arc.gc.ca"
 
 
+### Helper methods
 def random_sleep(lower, upper):
     """Sleep with random delay."""
     delay = random.uniform(lower, upper)
@@ -51,6 +49,18 @@ def load_html(url):
         print(f"Error: {e}")
 
         return -1
+
+
+def connect_to_mongodb(connection, collection_name):
+    """Return MongoDB collection."""
+    # Connect to MongoDB
+    client = MongoClient(connection, tlsCAFile=certifi.where())
+
+    # Select the database (create one if it doesn't exist)
+    db = client["charity_data"]
+
+    # Return selected or created collection
+    return client, db[collection_name]
 
 
 def export_to_csv(file_name, input_data):
@@ -75,18 +85,6 @@ def export_to_csv(file_name, input_data):
         writer.writerows(input_data)
 
 
-def connect_to_mongodb(connection, collection_name):
-    """Return MongoDB collection."""
-    # Connect to MongoDB
-    client = MongoClient(connection, tlsCAFile=certifi.where())
-
-    # Select the database (create one if it doesn't exist)
-    db = client["charity_data"]
-
-    # Return selected or created collection
-    return client, db[collection_name]
-
-
 def export_to_mongodb(connection, collection_name, input_data):
     """Export data to MongoDB."""
     client, collection = connect_to_mongodb(connection, collection_name)
@@ -98,14 +96,43 @@ def export_to_mongodb(connection, collection_name, input_data):
     client.close()
 
 
+def get_max_page_increment(soup):
+    """
+    Return the max page increment for data displayed over multiple pages.
+    Usually pages with the form 'Showing 101 to 200 of 676 entries on this page'
+    """
+    pages_indicator_pattern = re.compile(
+        r"Showing \d+ to \d+ of \d+ entries on this page"
+    )
+    pages_indicator = soup.find(
+        lambda tag: tag.name == "strong"
+        and pages_indicator_pattern.search(tag.get_text(strip=True))
+    )
+
+    pattern = re.compile(r"\d+")  # Define a regular expression pattern to match numbers
+
+    matches = pattern.findall(
+        pages_indicator
+    )  # Find all matches in the pages_indicator text
+
+    if len(matches) >= 3:
+        items_in_page = int(matches[1])
+        page_count = math.ceil(
+            int(matches[2]) / items_in_page
+        )  # Pages = total entries / entries per page, rounded up
+
+    return items_in_page, page_count
+
+
+### Data extraction methods
 def load_charity_list():
     """Load list of all charities."""
     # Set up source and lists to receive load
     target_url = "https://apps.cra-arc.gc.ca/ebci/hacc/srch/pub/bscSrch"
     page_num = 1
 
-    master_charity_org_name_text = []
-    master_charity_org_name_href = []
+    master_charity_name = []
+    master_charity_url = []
     master_charity_status = []
     master_charity_type = []
     master_charity_province = []
@@ -114,9 +141,10 @@ def load_charity_list():
 
     # Load html data
     soup = load_html(target_url)
+    items_in_page, page_count = get_max_page_increment(soup)
 
     # While a next page exists, append table data to master lists
-    while soup != -1:
+    while soup != -1 and page_num <= page_count:
         ### Gather output table data including charity name, url, status, etc.
         # Find all td elements with headers="headername", "header2" through "header6"
         headername_tds = soup.find_all("td", {"headers": "headername"})
@@ -127,10 +155,10 @@ def load_charity_list():
         header6_tds = soup.find_all("td", {"headers": "header6"})
 
         # Extract text and href from each <a> element and store in lists
-        charity_org_name_text = [
+        charity_name = [
             td.find("a").text.strip() for td in headername_tds if td.find("a")
         ]
-        charity_org_name_href = [
+        charity_url = [
             td.find("a")["href"].strip() for td in headername_tds if td.find("a")
         ]
 
@@ -142,8 +170,8 @@ def load_charity_list():
         charity_status_date = [td.text.strip() for td in header6_tds]
 
         # Append lists to master lists
-        master_charity_org_name_text.extend(charity_org_name_text)
-        master_charity_org_name_href.extend(charity_org_name_href)
+        master_charity_name.extend(charity_name)
+        master_charity_url.extend(charity_url)
         master_charity_status.extend(charity_status)
         master_charity_type.extend(charity_type)
         master_charity_province.extend(charity_province)
@@ -162,19 +190,6 @@ def load_charity_list():
         # Load next page - if no response, exit loop (assuming reached last avail. page)
         soup = load_html(target_url)
 
-        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
-        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
-        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
-        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
-        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
-        if page_num == 2:
-            break
-        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
-        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
-        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
-        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
-        ### REMOVE THIS BLOCK - ONLY IN PLACE FOR DEVELOPMENT
-
         # Pause bc website is weak af
         random_sleep(1, 12)
 
@@ -183,8 +198,8 @@ def load_charity_list():
 
     documents = [
         {
-            "charity_org_name_text": name_text,
-            "charity_org_name_href": name_href,
+            "charity_name": name_text,
+            "charity_url": name_href,
             "charity_status": status,
             "charity_type": charity_type,
             "charity_province": province,
@@ -193,8 +208,8 @@ def load_charity_list():
             "insert_date": insert_date,
         }
         for name_text, name_href, status, charity_type, province, city, status_date in zip(
-            master_charity_org_name_text,
-            master_charity_org_name_href,
+            master_charity_name,
+            master_charity_url,
             master_charity_status,
             master_charity_type,
             master_charity_province,
@@ -209,20 +224,54 @@ def load_charity_list():
 
     # Export data to mongodb
     collection_name = "charity_list"
-    export_to_mongodb(mongodb_connection, collection_name, documents)
+    export_to_mongodb(MONGODB_CONNECTION, collection_name, documents)
+
+    return 0
 
 
-def get_charity_data(doc):
-    """Load charity data including registration number and pointers to the last 5 years of detailed information."""
+def load_fv_dir():
+    """Get full view urls for each charity where status = registered"""
+    collection_name = "charity_list"
+    client, collection = connect_to_mongodb(MONGODB_CONNECTION, collection_name)
+
+    # Query where status = 'Registered'
+    query = {"charity_status": "Registered"}
+    result = collection.find(query)
+
+    # Loop through results
+    full_view_dir = []
+
+    for r in result:
+        fv_urls = get_fv_urls(r)  # Extract all of a charity's FV urls
+
+        full_view_dir.extend(fv_urls)  # Add charity's fv urls to master list
+
+        random_sleep(1, 10)  # Pause so website doesn't crash
+
+    # Export charity full view directory into csv and MongoDB
+    file_name = "charity-fv-dir"
+    export_to_csv(file_name, full_view_dir)
+
+    # Export data to mongodb
+    collection_name = "charity_fv_dir"
+    export_to_mongodb(MONGODB_CONNECTION, collection_name, full_view_dir)
+
+    client.close()
+
+    return 0
+
+
+def get_fv_urls(doc):
+    """Return charity full view urls"""
     master_charity_name = []
     master_reg_num = []
-    master_full_view_url = []
-    master_full_view_year = []
+    master_fv_url = []
+    master_fv_year = []
 
     # Load registration numbers for a specific charity
-    charity_name = doc.get("charity_org_name_text")
-    charity_href = doc.get("charity_org_name_href")
-    target_url = cra_parent_url + charity_href
+    charity_name = doc.get("charity_name")
+    charity_url = doc.get("charity_url")
+    target_url = CRA_PARENT_URL + charity_url
 
     # Check if the key exists in the document
     if target_url is not None:
@@ -244,6 +293,7 @@ def get_charity_data(doc):
         parent_element = preceding_div.find_parent(
             "section"
         )  # Find the Full View parent element
+
         target_fv = parent_element.find(
             "ul", class_="list-unstyled mrgn-lft-md"
         )  # Find the ul element containing links
@@ -251,19 +301,20 @@ def get_charity_data(doc):
         target_fv_list = target_fv.find_all(
             "li"
         )  # Find all the sub elements containing FV urls and submission years
-        master_full_view_url = [
+
+        master_fv_url = [
             fv.find("a")["href"].strip() for fv in target_fv_list if fv.find("a")
         ]
-        master_full_view_year = [
+        master_fv_year = [
             fv.find("a").text.strip() for fv in target_fv_list if fv.find("a")
         ]
 
     else:
-        charity_name = doc.get("charity_org_name_text", None)
+        charity_name = doc.get("charity_name", None)
         print(f"{charity_name}'s href isn't working.")
 
     # Create table of reg_num, urls, and years
-    max_length = max(len(master_full_view_url), len(master_full_view_year))
+    max_length = max(len(master_fv_url), len(master_fv_year))
     master_charity_name = [charity_name] * max_length
     master_reg_num = [reg_num] * max_length
 
@@ -273,210 +324,71 @@ def get_charity_data(doc):
     # Combine lists into a list of dictionaries
     document = [
         {
-            "charity_org_name_text": name,
-            "charity_reg_num": rn,
-            "full_view_url": url,
-            "full_view_year": yr,
+            "charity_name": name,
+            "charity_url": rn,
+            "fv_url": url,
+            "fv_year": yr,
             "insert_date": insert_date,
         }
         for name, rn, url, yr in zip(
             master_charity_name,
             master_reg_num,
-            master_full_view_url,
-            master_full_view_year,
+            master_fv_url,
+            master_fv_year,
         )
     ]
 
     return document
 
 
-def get_fv_detail(doc):
-    """For a charity's specified year, load the director and trustees information."""
-    # Prep fv target url
-    fv_href = doc.get("full_view_url")
-    target_url = cra_parent_url + fv_href
-
-    # Create director dictionary
-    master_director_info = []
-
-    # Create financial information dictionary
-    master_financial_info = []
-
-    if target_url is not None:
-        # Set up webdriver
-        driver = webdriver.Chrome()
-        driver.get(target_url)
-
-        # Open Section B
-        section_b_element = driver.find_element(
-            By.XPATH, "/html/body/div[1]/div/main/div[5]/ul/div/li/details/summary"
-        )
-        section_b_element.click()
-
-        # Go to directors worksheet
-        directors_worksheet_link = driver.find_element(
-            By.XPATH, "/html/body/div[1]/div/main/div[5]/ul/div/li/details/div/p/a"
-        )
-        directors_worksheet_link.click()
-
-        # Get director worksheet data
-        wait = WebDriverWait(driver, 10)
-        director_table = wait.until(
-            EC.presence_of_element_located(
-                (By.XPATH, "/html/body/div[1]/div/main/div[5]/div/table/tbody")
-            )
-        )
-        director_table = driver.find_element(
-            By.XPATH, "/html/body/div[1]/div/main/div[5]/div/table/tbody"
-        )  # Find table of directors
-
-        directors = director_table.find_elements(
-            By.TAG_NAME, "tr"
-        )  # Find individual director information from the table
-
-        for director in directors:
-            director_details = director.find_elements(By.TAG_NAME, "li")
-
-            charity_reg_num = doc.get("charity_reg_num")
-            fv_year = doc.get("full_view_year")
-            director_name = director_details[0].find_element(By.TAG_NAME, "strong").text
-            term_start = director_details[1].find_element(By.TAG_NAME, "strong").text
-            try:
-                term_end = director_details[2].find_element(By.TAG_NAME, "strong").text
-            except:
-                term_end = None
-            position = director_details[3].find_element(By.TAG_NAME, "strong").text
-            arms_length = director_details[4].find_element(By.TAG_NAME, "strong").text
-
-            # Get insert date
-            insert_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-            director_info = {
-                "charity_reg_num": charity_reg_num,
-                "full_view_year": fv_year,
-                "director_name": director_name,
-                "term_start": term_start,
-                "term_end": term_end,
-                "position": position,
-                "arms_length": arms_length,
-                "insert_date": insert_date,
-            }
-
-            master_director_info.append(director_info)
-
-        # Go to financial info
-        driver.get(target_url)  # Re-initiate webdriver back to fv page
-
-        # Return documents: director worksheet data, financial data
-
-        # Combine lists into list of dictionaries
-        # charity_reg_num = doc.get("charity_reg_num")
-        # charity_fv_year = doc.get("full_view_year")
-
-        # document = {
-        #     "charity_reg_num": charity_reg_num,
-        #     "full_view_year": charity_fv_year,
-        #     "directors_worksheet_url": directors_worksheet_url,
-        #     "financial_info_url": financial_info_url,
-        # }
-        return master_director_info, master_financial_info
-
-    else:
-        charity_name = doc.get("charity_org_name_text", None)
-        print(f"{charity_name}'s href isn't working.")
-    return 0
-
-
-def main():
+def load_fv_detail():
     """
-    Run the scraper:
-
-    Get list of charities <-- DONE
-    For each charity where status = registered:
-        Add registration number to each charity <-- DONE
-        Get last 5 years detailed data url <-- DONE
-
-        For each year get:
-            director info,
-            statement of fin. position,
-            statement of ops. - rev,
-            statement of ops. - exp,
-            other fin. info - perm. reduce disbursement quota
+    Load detailed data for each charity fv url, including:
+    - Directors information
+    - Financial information (Section D or Schedule 6, whichever is available)
+    - Qualified donees inforamtion (if available)
     """
 
-    ### Load all charity data
-    # Temporarily commented out while building next methods - first 100 charities are loaded.
-    # load_charity_list() <-- BRING THIS BACK
-
-    ### For each charity where status = registered, get it's registration number and pointers to last 5 years of detailed data
-    # Temporarily commented out while building following methods - first charity's 5-year FV data is loaded.
-    # collection_name = "charity_list"
-    # client, collection = connect_to_mongodb(mongodb_connection, collection_name)
-
-    # # Query where status = Registered
-    # query = {"charity_status": "Registered"}
-    # result = collection.find(query)
-
-    # # Loop through results
-    # full_view_dir = []
-
-    # for r in result:
-    #     charity_fv = get_charity_data(
-    #         r
-    #     )  # Get a single charity's fv details: charity name, reg_num, fv urls and fv years
-
-    #     full_view_dir.extend(charity_fv)  # Add charity fv details to master list
-
-    # # Export charity full view directory into csv and MongoDB
-    # file_name = "charity-fv-dir"
-    # export_to_csv(file_name, full_view_dir)
-
-    # # Export data to mongodb
-    # collection_name = "charity_fv_dir"
-    # export_to_mongodb(mongodb_connection, collection_name, full_view_dir)
-
-    # client.close()
-
-    ### For each charity's year of detailed data, get detailed information
+    # For each charity fv, extract details
     collection_name = "charity_fv_dir"
-    client, collection = connect_to_mongodb(mongodb_connection, collection_name)
+    client, collection = connect_to_mongodb(MONGODB_CONNECTION, collection_name)
 
-    # Extract all documents with the most recent insert_date
+    # Extract latest documents - assuming no older than a week before the latest fv value
     most_recent_insert_date = collection.find_one(
         {}, {"_id": 0, "insert_date": 1}, sort=[("insert_date", -1)]
     )[
         "insert_date"
     ]  # Get most recent insert_date
 
-    latest_fvs = collection.find(
-        {"insert_date": most_recent_insert_date}, {"_id": 0}
-    )  # Get all FVs with the most recent insert_date
-
-    # Export each full view director info and financial info
-
-    for doc in latest_fvs:
-        master_director_info, master_financial_info = get_fv_detail(doc)
-
-        # Export fv details into csv
-        file_name_director = "director-info-" + doc.get("charity_reg_num")
-        export_to_csv(file_name_director, master_director_info)
-
-        # file_name_financial = "financial-info-" + doc.get("charity_reg_num")
-        # export_to_csv(file_name_financial, master_financial_info)
-
-        # Export fv details into MongoDB
-        collection_name_directors = "director_info"
-        export_to_mongodb(
-            mongodb_connection, collection_name_directors, master_director_info
-        )
-
-        # collection_name_financials = "financial_info"
-        # export_to_mongodb(
-        #     mongodb_connection, collection_name_financials, master_financial_info
-        # )
-
-    client.close()
+    return 0
 
 
-### RUN THE SCRAPER
+def load_directors():
+    return 0
+
+
+def load_section_d():
+    return 0
+
+
+def load_schedule_6():
+    return 0
+
+
+def load_donees():
+    return 0
+
+
+def main():
+    """
+    1. Load urls to all charities
+    2. Load full view urls for all registered charities. For each charity, get fv urls
+    3. Load charity details for all fv urls. For each fv url, get: director info, section D financials (if avail.), schedule 6 financials (if avail.), and list of donees (if avail.)
+    """
+    load_charity_list()
+    load_fv_dir()
+    load_fv_detail()
+
+
+### Run the scraper
 main()

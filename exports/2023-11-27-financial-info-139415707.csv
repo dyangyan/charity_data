@@ -1,0 +1,69 @@
+charity_reg_num,full_view_year,field,value_1,value_2,value_3,value_4,insert_date
+139415707,2022-03-31,"Cash, bank accounts, and short-term investments",4100,"$366,282.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Amounts receivable from non-arm's length persons,4110,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Amounts receivable from all others,4120,"$30,119.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Investments in non-arm's length persons,4130,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Long-term investments,4140,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Inventories,4150,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Land and buildings in Canada,4155,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Other capital assets in Canada,4160,"$348,253.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Capital assets outside Canada,4165,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Accumulated amortization of capital assets (enter negative amount),4166,"$-225,960.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Other assets,4170,"$12,396.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,10 year gifts,4180,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Total assets (add lines 4100 to 4170),4200,"$531,090.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,"Amount included in lines 4150, 4155, 4160, 4165 and 4170 not used in charitable activities",4250,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Accounts payable and accrued liabilities,4300,"$16,708.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Deferred revenue,4310,"$14,872.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Amounts owing to non-arm's length persons,4320,"$13,796.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Other liabilities,4330,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Total liabilities (add lines 4300 to 4330),4350,"$45,376.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Total eligible amount of all gifts for which the charity issued tax receipts,4500,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Total eligible amount of tax-receipted tuition fees,5610,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Total amount of 10 year gifts received,4505,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Total amount received from other registered charities,4510,"$4,000.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Total other gifts received for which a tax receipt was not issued by the charity (excluding amounts at lines 4575 and 4630),4530,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Total revenue received from federal government,4540,"$9,778.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Total revenue received from provincial/territorial governments,4550,"$647,741.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Total revenue received from municipal/regional governments,4560,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Total tax-receipted revenue from all sources outside of Canada (government and non-government),4571,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Total non tax-receipted revenue from all sources outside Canada (government and non-government),4575,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Total interest and investment income received or earned,4580,$101.00,,,2023-11-27 17:29:26
+139415707,2022-03-31,Gross proceeds from disposition of assets,4590,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Net proceeds from disposition of assets (show a negative amount with minus sign),4600,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Gross income received from rental of land and/or buildings,4610,"$7,747.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,"Total non tax-receipted revenues received for memberships, dues and association fees",4620,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Total non tax-receipted revenue from fundraising,4630,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Total revenue from sale of goods and services (except to any level of government in Canada),4640,"$1,470.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Other revenue not already included in the amounts above,4650,$320.00,,,2023-11-27 17:29:26
+139415707,2022-03-31,Specify type(s) of revenue included in the amount reported at 4650,4655,AMORTISSEMENT DES APPORTS REPORTÉS,,,2023-11-27 17:29:26
+139415707,2022-03-31,"Total revenue (add lines 4500, 4510 to 4560, 4575, 4580, and 4600 to 4650)",4700,"$671,157.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Advertising and promotion,4800,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Travel and vehicle expenses,4810,"$1,108.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Interest and bank charges,4820,"$1,883.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,"Licences, memberships, and dues",4830,$207.00,,,2023-11-27 17:29:26
+139415707,2022-03-31,Office supplies and expenses,4840,"$11,227.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Occupancy costs,4850,"$123,494.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Professional and consulting fees,4860,"$162,170.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Education and training for staff and volunteers,4870,"$4,188.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,"Total expenditure on all compensation (enter the amount reported at line 390 in Schedule 3, if applicable)",4880,"$245,053.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Fair market value of all donated goods used in charitable activities,4890,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Purchased supplies and assets,4891,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Amortization of capitalized assets,4900,"$48,829.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Research grants and scholarships as part of charitable activities,4910,,,,2023-11-27 17:29:26
+139415707,2022-03-31,All other expenditures not included in the amounts above (excluding gifts to qualified donees),4920,"$31,197.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,Specify type(s) of expenditures included in the amount reported at 4920,4930,"FRAIS D'ACTIVITÉS, CAMPS, ASSEMBLÉE, VIE ASSOCIATIVE",,,2023-11-27 17:29:26
+139415707,2022-03-31,Total expenditures before gifts to qualified donees (add lines 4800 to 4920),4950,"$629,356.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,,,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Of the amounts at line 4950:,,,,,2023-11-27 17:29:26
+139415707,2022-03-31,(a) Total expenditures on charitable activities,5000,"$512,082.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,(b) Total expenditures on management and administration,5010,"$117,274.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,(c) Total expenditures on fundraising,5020,,,,2023-11-27 17:29:26
+139415707,2022-03-31,(d) Total other expenditures included in line 4950,5040,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Total amount of gifts made to all qualified donees,5050,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Total expenditures (add lines 4950 and 5050),5100,"$629,356.00",,,2023-11-27 17:29:26
+139415707,2022-03-31,"Enter the amount accumulated for the fiscal period, including income earned on accumulated funds",5500,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Enter the amount disbursed for the fiscal period for the specified purpose,5510,,,,2023-11-27 17:29:26
+139415707,2022-03-31,"If the charity has received approval to make a reduction to its disbursement quota, enter the amount for the fiscal period",5750,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Enter the average value of property not used for charitable activities or administration during the 24 months before the BEGINNING of the fiscal period,5900,,,,2023-11-27 17:29:26
+139415707,2022-03-31,Enter the average value of property not used for charitable activities or administration during the 24 months before the END of the fiscal period,5910,,,,2023-11-27 17:29:26
