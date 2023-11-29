@@ -21,9 +21,9 @@ MONGODB_USERNAME = "danyangyan"
 MONGODB_PASSWORD = "5JhJMQ2itEnVW2Wm"
 MONGODB_CONNECTION = (
     "mongodb+srv://"
-    + mongodb_username
+    + MONGODB_USERNAME
     + ":"
-    + mongodb_password
+    + MONGODB_PASSWORD
     + "@discourse.mwgzz8m.mongodb.net"
 )
 CRA_PARENT_URL = "https://apps.cra-arc.gc.ca"
@@ -191,7 +191,7 @@ def load_charity_list():
         soup = load_html(target_url)
 
         # Pause bc website is weak af
-        random_sleep(1, 12)
+        random_sleep(1, 10)
 
     # Combine lists into a list of dictionaries, adding insert date
     insert_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
